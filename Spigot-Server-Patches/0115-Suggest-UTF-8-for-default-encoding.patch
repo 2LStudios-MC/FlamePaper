@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: heroslender <bruno.martins1998@hotmail.com>
+Date: Fri, 4 Dec 2020 22:12:50 +0000
+Subject: [PATCH] Suggest UTF-8 for default encoding
+
+
+diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
+index 088beb22b53ddf77dc182dd5ac39e1086d5279aa..dea548cd651270198a012eb05609af04c1496154 100644
+--- a/src/main/java/net/minecraft/server/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/DedicatedServer.java
+@@ -119,6 +119,13 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L) {
+             DedicatedServer.LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+         }
++        if (!"UTF-8".equals(System.getProperty("file.encoding"))) {
++            DedicatedServer.LOGGER.warn(
++                    "File encoding is set to {}, consider using UTF-8 instead " +
++                            "by adding -Dfile.encoding=UTF-8 to your startup script.",
++                    System.getProperty("file.encoding")
++            );
++        }
+ 
+         DedicatedServer.LOGGER.info("Loading properties");
+         this.propertyManager = new PropertyManager(this.options); // CraftBukkit - CLI argument support
