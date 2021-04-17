@@ -55,7 +55,7 @@ index f4717af7d1a430dab45c5c8c368fd26c4fd73cb2..9fc40a3c4848295736572ef22332a0af
 +    public TileEntityBeacon() {
 +    }
 +
-+    // NextSpigot - Start
++    // FlamePaper - Start
 +    public boolean isEnabled() {
 +        return i;
 +    }
@@ -71,7 +71,7 @@ index f4717af7d1a430dab45c5c8c368fd26c4fd73cb2..9fc40a3c4848295736572ef22332a0af
 +    public void setLevel(int newLevel) {
 +        this.j = newLevel;
 +    }
-+    // NextSpigot - end
++    // FlamePaper - end
 +
      public ItemStack[] getContents() {
 -        return new ItemStack[] { this.inventorySlot };
