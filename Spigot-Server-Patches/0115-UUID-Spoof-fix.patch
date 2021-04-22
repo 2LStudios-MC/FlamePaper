@@ -1,0 +1,87 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: heroslender <bruno.martins1998@hotmail.com>
+Date: Sun, 6 Dec 2020 12:19:53 +0000
+Subject: [PATCH] UUID Spoof fix
+
+
+diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
+index 541cec7cfb0fcc680af4bb34eeeb1eb20131d3cc..739914cf36c03a6489909109fa93f8e73bf70576 100644
+--- a/src/main/java/net/minecraft/server/LoginListener.java
++++ b/src/main/java/net/minecraft/server/LoginListener.java
+@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
+ import org.bukkit.craftbukkit.util.Waitable;
+ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+ import org.bukkit.event.player.PlayerPreLoginEvent;
++import org.github.paperspigot.PaperSpigotConfig;
+ // CraftBukkit end
+ 
+ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBox {
+@@ -82,12 +83,28 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+     }
+ 
+     // Spigot start
+-    public void initUUID()
+-    {
++    public boolean initUUID() {
+         UUID uuid;
+         if ( networkManager.spoofedUUID != null )
+         {
+             uuid = networkManager.spoofedUUID;
++
++            // FlamePaper start - Verify spoofed UUID
++            if (PaperSpigotConfig.exploitUuidSpoofEnabled) {
++                UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
++                if (!uuid.equals(offlineUuid)) {
++                    // Failed against the offline UUID, test online UUID
++                    GameProfile profile = new GameProfile(uuid, null);
++                    profile = MinecraftServer.getServer().aD().fillProfileProperties(profile, true);
++
++                    // Request should fill the name for the given UUID if found
++                    if (!this.i.getName().equals(profile.getName())) {
++                        disconnect(PaperSpigotConfig.exploitUuidSpoofKickMessage);
++                        return false;
++                    }
++                }
++            }
++            // FlamePaper end - Verify spoofed UUID
+         } else
+         {
+             uuid = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + this.i.getName() ).getBytes( Charsets.UTF_8 ) );
+@@ -102,6 +119,8 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+                 this.i.getProperties().put( property.getName(), property );
+             }
+         }
++
++        return true; // Flamepaper - Verify spoofed UUID
+     }
+     // Spigot end
+ 
+@@ -161,9 +180,8 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+         if (this.server.getOnlineMode() && !this.networkManager.c()) {
+             this.g = LoginListener.EnumProtocolState.KEY;
+             this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.Q().getPublic(), this.e));
+-        } else {
++        } else if (initUUID()) { // FlamePaper - Verify spoofed UUID
+             // Spigot start
+-            initUUID();
+             new Thread(new Runnable() {
+ 
+                 @Override
+diff --git a/src/main/java/org/github/paperspigot/PaperSpigotConfig.java b/src/main/java/org/github/paperspigot/PaperSpigotConfig.java
+index 65f43b002515987bd44d35e8e08fdc383fbdab34..ab3cbeb799e729225e6fadeb9fcd219a8ea5aa66 100644
+--- a/src/main/java/org/github/paperspigot/PaperSpigotConfig.java
++++ b/src/main/java/org/github/paperspigot/PaperSpigotConfig.java
+@@ -225,8 +225,13 @@ public class PaperSpigotConfig
+ 
+     public static boolean exploitNullAddressEnabled;
+     public static String exploitNullAddressKickMessage;
++    public static boolean exploitUuidSpoofEnabled;
++    public static String exploitUuidSpoofKickMessage;
+     private static void exploits() {
+         exploitNullAddressEnabled = getBoolean("exploits.null-address.enabled", true);
+         exploitNullAddressKickMessage = getString("exploits.null-address.kick-message", "Invalid address!");
++
++        exploitUuidSpoofEnabled = getBoolean("exploits.uuid-spoof.enabled", true);
++        exploitUuidSpoofKickMessage = getString("exploits.uuid-spoof.kick-message", "Invalid connection!");
+     }
+ }
