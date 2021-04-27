@@ -12,7 +12,7 @@ index e7c11e1d7b9ae0fd80ae435f7cc06d7a463e7ab5..8cd998c0dcbe0a90e104a39b3a2c2a5e
  
      }
  
-+    // NextSpigot - Start
++    // FlamePaper - Start
 +    public int getMapId() {
 +        return a;
 +    }
@@ -73,7 +73,7 @@ index e7c11e1d7b9ae0fd80ae435f7cc06d7a463e7ab5..8cd998c0dcbe0a90e104a39b3a2c2a5e
 +        this.d = offsetX;
 +        this.e = offsetY;
 +    }
-+    // NextSpigot - End
++    // FlamePaper - End
 +
      public void a(PacketDataSerializer packetdataserializer) throws IOException {
          this.a = packetdataserializer.e();
@@ -95,7 +95,7 @@ index 69dd590a407a70b6bc7be6d9295e90d3e3bc4c1e..3eff677eefd7a8d3806a9483980f30ed
  
      }
  
-+    // NextSpigot - Start
++    // FlamePaper - Start
 +    public int getId() {
 +        return a;
 +    }
@@ -219,7 +219,7 @@ index 69dd590a407a70b6bc7be6d9295e90d3e3bc4c1e..3eff677eefd7a8d3806a9483980f30ed
 +    public void setDirection(final int direction) {
 +        this.k = direction;
 +    }
-+    // NextSpigot - End
++    // FlamePaper - End
 +
      public void a(PacketDataSerializer packetdataserializer) throws IOException {
          this.a = packetdataserializer.e();
