@@ -1,0 +1,235 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: heroslender <bruno.martins1998@hotmail.com>
+Date: Mon, 18 Jan 2021 22:23:51 +0000
+Subject: [PATCH] Add getters and setters for packets
+
+
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMap.java b/src/main/java/net/minecraft/server/PacketPlayOutMap.java
+index e7c11e1d7b9ae0fd80ae435f7cc06d7a463e7ab5..8cd998c0dcbe0a90e104a39b3a2c2a5e6ae61577 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutMap.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutMap.java
+@@ -34,6 +34,69 @@ public class PacketPlayOutMap implements Packet<PacketListenerPlayOut> {
+ 
+     }
+ 
++    // NextSpigot - Start
++    public int getMapId() {
++        return a;
++    }
++
++    public void setMapId(final int newId) {
++        this.a = newId;
++    }
++
++    public byte getScale() {
++        return b;
++    }
++
++    public void setScale(final byte newScale) {
++        this.b = newScale;
++    }
++
++    public MapIcon[] getIcons() {
++        return c;
++    }
++
++    public void setIcons(Collection<MapIcon> icons) {
++        setIcons(icons.toArray(new MapIcon[0]));
++    }
++
++    public void setIcons(MapIcon... icons) {
++        this.c = icons;
++    }
++
++    public byte[] getBuffer() {
++        return h;
++    }
++
++    public void setBuffer(final byte[] buffer, final int width) {
++        setBuffer(buffer, width, 0, 0);
++    }
++
++    public void setBuffer(final byte[] buffer, final int width, final int offsetX, final int offsetY) {
++        final int bufferSize = buffer.length;
++        final int height = bufferSize / width;
++
++        if (height * width != bufferSize) {
++            throw new IllegalArgumentException("Invalid buffer size!");
++        }
++
++        if (offsetX == 0 && offsetY == 0) {
++            this.h = buffer;
++        } else {
++            this.h = new byte[width * height];
++
++            for (int x = 0; x < width; ++x) {
++                for (int y = 0; y < height; ++y) {
++                    this.h[x + y * width] = buffer[offsetX + x + (offsetY + y) * 128];
++                }
++            }
++        }
++        this.f = width;
++        this.g = height;
++        this.d = offsetX;
++        this.e = offsetY;
++    }
++    // NextSpigot - End
++
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
+         this.a = packetdataserializer.e();
+         this.b = packetdataserializer.readByte();
+@@ -83,8 +146,4 @@ public class PacketPlayOutMap implements Packet<PacketListenerPlayOut> {
+     public void a(PacketListenerPlayOut packetlistenerplayout) {
+         packetlistenerplayout.a(this);
+     }
+-
+-    public void a(PacketListener packetlistener) {
+-        this.a((PacketListenerPlayOut) packetlistener);
+-    }
+ }
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java
+index 69dd590a407a70b6bc7be6d9295e90d3e3bc4c1e..3eff677eefd7a8d3806a9483980f30ed0011df99 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java
+@@ -68,6 +68,132 @@ public class PacketPlayOutSpawnEntity implements Packet<PacketListenerPlayOut> {
+ 
+     }
+ 
++    // NextSpigot - Start
++    public int getId() {
++        return a;
++    }
++
++    public void setId(final int id) {
++        this.a = id;
++    }
++
++    public int getX() {
++        return b;
++    }
++
++    public double getLocX() {
++        return getX() / 32.0;
++    }
++
++    public void setX(final int x) {
++        this.b = x;
++    }
++
++    public void setLocX(final int x) {
++        setX(x * 32);
++    }
++
++    public void setLocX(final double x) {
++        setX(MathHelper.floor(x * 32));
++    }
++
++    public int getY() {
++        return c;
++    }
++
++    public double getLocY() {
++        return getY() / 32.0;
++    }
++
++    public void setY(final int y) {
++        this.c = y;
++    }
++
++    public void setLocY(final int y) {
++        setY(y * 32);
++    }
++
++    public void setLocY(final double y) {
++        setY(MathHelper.floor(y * 32));
++    }
++
++    public int getZ() {
++        return d;
++    }
++
++    public double getLocZ() {
++        return getZ() / 32.0;
++    }
++
++    public void setZ(final int z) {
++        this.d = z;
++    }
++
++    public void setLocZ(final int z) {
++        setZ(z * 32);
++    }
++
++    public void setLocZ(final double z) {
++        setZ(MathHelper.floor(z * 32));
++    }
++
++    public int getYaw() {
++        return i;
++    }
++
++    public float getLocYaw() {
++        return getYaw() / 256.0F * 360.0F;
++    }
++
++    public void setYaw(final int yaw) {
++        this.i = yaw;
++    }
++
++    public void setLocYaw(final int yaw) {
++        setYaw(yaw * 256 / 360);
++    }
++
++    public void setLocYaw(final float yaw) {
++        setYaw(MathHelper.d(yaw * 256.0F / 360.0F));
++    }
++
++    public int getPitch() {
++        return h;
++    }
++
++    public float getLocPitch() {
++        return getPitch() / 256.0F * 360.0F;
++    }
++
++    public void setPitch(final int pitch) {
++        this.h = pitch;
++    }
++
++    public void setLocPitch(final int pitch) {
++        setPitch(pitch * 256 / 360);
++    }
++
++    public void setLocPitch(final float pitch) {
++        setPitch(MathHelper.d(pitch * 256.0F / 360.0F));
++    }
++
++    public int getEntityTypeId() {
++        return this.j;
++    }
++
++    public void setEntityTypeId(final int entityTypeId) {
++        this.j = entityTypeId;
++    }
++
++    public int getDirection() {
++        return this.k;
++    }
++
++    public void setDirection(final int direction) {
++        this.k = direction;
++    }
++    // NextSpigot - End
++
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
+         this.a = packetdataserializer.e();
+         this.j = packetdataserializer.readByte();
+@@ -129,8 +255,4 @@ public class PacketPlayOutSpawnEntity implements Packet<PacketListenerPlayOut> {
+     public void f(int i) {
+         this.g = i;
+     }
+-
+-    public void a(PacketListener packetlistener) {
+-        this.a((PacketListenerPlayOut) packetlistener);
+-    }
+ }
